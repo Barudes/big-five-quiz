@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Five Personality Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .intro {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .scale-guide {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .scale-guide span {
+            font-weight: 600;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .question:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .rating-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .rating-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #667eea;
+            background: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .rating-btn.selected {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress {
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .trait-result {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .trait-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .trait-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .trait-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .trait-bar {
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .trait-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .trait-description {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+        
+        .restart-btn {
+            width: 100%;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .restart-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .submission-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .submission-form h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-results-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-results-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.4);
+        }
+
+        .submit-results-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #dc3545;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .scale-guide {
+                flex-direction: column;
+                gap: 5px;
+                font-size: 0.8em;
+            }
+            
+            .rating-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>The Big Five Personality Test</h1>
+            <p>Discover your personality structure and understand why you act the way you do</p>
+        </div>
+        
+        <div class="content">
+            <div id="test-section">
+                <div class="intro">
+                    <p><strong>Instructions:</strong> For each statement below, rate how much you agree on a scale of 1-5:</p>
+                    <p style="margin-top: 10px;"><strong>1</strong> = Disagree, <strong>2</strong> = Slightly Disagree, <strong>3</strong> = Neutral, <strong>4</strong> = Slightly Agree, <strong>5</strong> = Agree</p>
+                </div>
+                
+                <div class="scale-guide">
+                    <span>1 - Disagree</span>
+                    <span>2 - Slightly Disagree</span>
+                    <span>3 - Neutral</span>
+                    <span>4 - Slightly Agree</span>
+                    <span>5 - Agree</span>
+                </div>
+                
+                <div class="progress">
+                    <span id="progress-text">0 of 50 questions answered</span>
+                </div>
+                
+                <div id="questions"></div>
+                
+                <button class="submit-btn" id="submit-btn" disabled>Calculate My Results</button>
+            </div>
+            
+            <div id="results-section" class="results">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Your Big Five Personality Results</h2>
+                <div id="results-content"></div>
+                
+                <div class="submission-form">
+                    <h3>Submit Your Results</h3>
+                    <p style="margin-bottom: 20px; color: #666;">Enter your information below to send your results to the L&D team.</p>
+                    
+                    <div class="form-group">
+                        <label for="participant-name">Your Name *</label>
+                        <input type="text" id="participant-name" placeholder="John Smith" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="participant-email">Your Email *</label>
+                        <input type="email" id="participant-email" placeholder="john.smith@hirschbach.com" required>
+                    </div>
+                    
+                    <button class="submit-results-btn" id="submit-results-btn">Submit Results to L&D Team</button>
+                    
+                    <div class="success-message" id="success-message">
+                        <strong>✓ Success!</strong> Your results have been submitted to the L&D team.
+                    </div>
+                    
+                    <div class="error-message" id="error-message">
+                        <strong>✗ Error:</strong> <span id="error-text"></span>
+                    </div>
+                </div>
+                
+                <button class="restart-btn" id="restart-btn">Take Test Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IMPORTANT: Replace this URL with your Google Apps Script Web App URL
+        const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
+        const questions = [
+            {id: 1, text: "I am the life of the party."},
+            {id: 2, text: "I feel little concern for others."},
+            {id: 3, text: "I am always prepared."},
+            {id: 4, text: "I get stressed out easily."},
+            {id: 5, text: "I have a rich vocabulary."},
+            {id: 6, text: "I don't talk a lot."},
+            {id: 7, text: "I am interested in people."},
+            {id: 8, text: "I leave my belongings around."},
+            {id: 9, text: "I am relaxed most of the time."},
+            {id: 10, text: "I have difficulty understanding abstract ideas."},
+            {id: 11, text: "I feel comfortable around people."},
+            {id: 12, text: "I insult people."},
+            {id: 13, text: "I pay attention to details."},
+            {id: 14, text: "I worry about things."},
+            {id: 15, text: "I have a vivid imagination."},
+            {id: 16, text: "I keep in the background."},
+            {id: 17, text: "I sympathize with others' feelings."},
+            {id: 18, text: "I make a mess of things."},
+            {id: 19, text: "I seldom feel blue."},
+            {id: 20, text: "I am not interested in abstract ideas."},
+            {id: 21, text: "I start conversations."},
+            {id: 22, text: "I am not interested in other people's problems."},
+            {id: 23, text: "I get chores done right away."},
+            {id: 24, text: "I am easily disturbed."},
+            {id: 25, text: "I have excellent ideas."},
+            {id: 26, text: "I have little to say."},
+            {id: 27, text: "I have a soft heart."},
+            {id: 28, text: "I often forget to put things back in their proper place."},
+            {id: 29, text: "I get upset easily."},
+            {id: 30, text: "I do not have a good imagination."},
+            {id: 31, text: "I talk to a lot of different people at parties."},
+            {id: 32, text: "I am not really interested in others."},
+            {id: 33, text: "I like order."},
+            {id: 34, text: "I change my mood a lot."},
+            {id: 35, text: "I am quick to understand things."},
+            {id: 36, text: "I don't like to draw attention to myself."},
+            {id: 37, text: "I take time out for others."},
+            {id: 38, text: "I shirk my duties."},
+            {id: 39, text: "I have frequent mood swings."},
+            {id: 40, text: "I use difficult words."},
+            {id: 41, text: "I don't mind being the center of attention."},
+            {id: 42, text: "I feel others' emotions."},
+            {id: 43, text: "I follow a schedule."},
+            {id: 44, text: "I get irritated easily."},
+            {id: 45, text: "I spend time reflecting on things."},
+            {id: 46, text: "I am quiet around strangers."},
+            {id: 47, text: "I make people feel at ease."},
+            {id: 48, text: "I am exacting in my work."},
+            {id: 49, text: "I often feel blue."},
+            {id: 50, text: "I am full of ideas."}
+        ];
+
+        // Display in OCEAN order
+        const traitOrder = ['O', 'C', 'E', 'A', 'N'];
+
+        const traitInfo = {
+            O: {
+                name: "Openness to Experience",
+                description: "Openness to Experience is the personality trait of seeking new experience and intellectual pursuits. High scorers may daydream a lot. Low scorers may be very down to earth."
+            },
+            C: {
+                name: "Conscientiousness",
+                description: "Conscientiousness is the trait that measures how you like your world organized. High scorers tend to like their world organized and low scorers tend to be more adaptable."
+            },
+            E: {
+                name: "Extroversion",
+                description: "Extroversion is the personality trait of seeking fulfillment from sources outside the self or in community. High scorers tend to be very social while low scorers prefer to work on their projects alone."
+            },
+            A: {
+                name: "Agreeableness",
+                description: "Agreeableness reflects how much individuals adjust their behavior to suit others. High scorers are typically polite and people-focused. Low scorers tend to 'tell it like it is' and are generally more task-focused."
+            },
+            N: {
+                name: "Negative Emotion",
+                description: "High scorers may experience anxiety and mood swings more frequently. Low scorers tend to be more emotionally stable."
+            }
+        };
+
+        let answers = {};
+        let calculatedScores = {};
+
+        function renderQuestions() {
+            const container = document.getElementById('questions');
+            questions.forEach(q => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `
+                    <div class="question-text">${q.id}. ${q.text}</div>
+                    <div class="rating-buttons" data-question="${q.id}">
+                        ${[1,2,3,4,5].map(rating => 
+                            `<button class="rating-btn" data-rating="${rating}">${rating}</button>`
+                        ).join('')}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            container.addEventListener('click', (e) => {
+                if (e.target.classList.contains('rating-btn')) {
+                    const questionId = parseInt(e.target.parentElement.dataset.question);
+                    const rating = parseInt(e.target.dataset.rating);
+                    
+                    e.target.parentElement.querySelectorAll('.rating-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    e.target.classList.add('selected');
+                    
+                    answers[questionId] = rating;
+                    updateProgress();
+                }
+            });
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(answers).length;
+            document.getElementById('progress-text').textContent = `${answered} of 50 questions answered`;
+            document.getElementById('submit-btn').disabled = answered < 50;
+        }
+
+        function calculateScores() {
+            const scores = {};
+            
+            // Extroversion: E = 20 + (1) - (6) + (11) - (16) + (21) - (26) + (31) - (36) + (41) - (46)
+            const E_questions = [
+                {id: 1, mult: 1}, {id: 6, mult: -1}, {id: 11, mult: 1}, {id: 16, mult: -1},
+                {id: 21, mult: 1}, {id: 26, mult: -1}, {id: 31, mult: 1}, {id: 36, mult: -1},
+                {id: 41, mult: 1}, {id: 46, mult: -1}
+            ];
+            scores.E = 20 + E_questions.reduce((sum, q) => sum + (answers[q.id] * q.mult), 0);
+            
+            // Agreeableness: A = 14 - (2) + (7) - (12) + (17) - (22) + (27) - (32) + (37) + (42) + (47)
+            const A_questions = [
+                {id: 2, mult: -1}, {id: 7, mult: 1}, {id: 12, mult: -1}, {id: 17, mult: 1},
+                {id: 22, mult: -1}, {id: 27, mult: 1}, {id: 32, mult: -1}, {id: 37, mult: 1},
+                {id: 42, mult: 1}, {id: 47, mult: 1}
+            ];
+            scores.A = 14 + A_questions.reduce((sum, q) => sum + (answers[q.id] * q.mult), 0);
+            
+            // Conscientiousness: C = 14 + (3) - (8) + (13) - (18) + (23) - (28) + (33) - (38) + (43) + (48)
+            const C_questions = [
+                {id: 3, mult: 1}, {id: 8, mult: -1}, {id: 13, mult: 1}, {id: 18, mult: -1},
+                {id: 23, mult: 1}, {id: 28, mult: -1}, {id: 33, mult: 1}, {id: 38, mult: -1},
+                {id: 43, mult: 1}, {id: 48, mult: 1}
+            ];
+            scores.C = 14 + C_questions.reduce((sum, q) => sum + (answers[q.id] * q.mult), 0);
+            
+            // Neuroticism: N = 38 - (4) - (9) - (14) - (19) - (24) - (29) - (34) - (39) - (44) - (49)
+            const N_questions = [
+                {id: 4, mult: -1}, {id: 9, mult: -1}, {id: 14, mult: -1}, {id: 19, mult: -1},
+                {id: 24, mult: -1}, {id: 29, mult: -1}, {id: 34, mult: -1}, {id: 39, mult: -1},
+                {id: 44, mult: -1}, {id: 49, mult: -1}
+            ];
+            scores.N = 38 + N_questions.reduce((sum, q) => sum + (answers[q.id] * q.mult), 0);
+            
+            // Openness: O = 8 + (5) - (10) + (15) - (20) + (25) - (30) + (35) + (40) + (45) + (50)
+            const O_questions = [
+                {id: 5, mult: 1}, {id: 10, mult: -1}, {id: 15, mult: 1}, {id: 20, mult: -1},
+                {id: 25, mult: 1}, {id: 30, mult: -1}, {id: 35, mult: 1}, {id: 40, mult: 1},
+                {id: 45, mult: 1}, {id: 50, mult: 1}
+            ];
+            scores.O = 8 + O_questions.reduce((sum, q) => sum + (answers[q.id] * q.mult), 0);
+
+            return scores;
+        }
+
+        function displayResults(scores) {
+            calculatedScores = scores;
+            const resultsContent = document.getElementById('results-content');
+            resultsContent.innerHTML = '';
+
+            // Display in OCEAN order
+            traitOrder.forEach(trait => {
+                const score = scores[trait];
+                const percentage = (score / 40) * 100;
+                
+                const div = document.createElement('div');
+                div.className = 'trait-result';
+                div.innerHTML = `
+                    <div class="trait-header">
+                        <span class="trait-name">${traitInfo[trait].name}</span>
+                        <span class="trait-score">${score}/40</span>
+                    </div>
+                    <div class="trait-bar">
+                        <div class="trait-fill" style="width: ${percentage}%">
+                            ${Math.round(percentage)}%
+                        </div>
+                    </div>
+                    <div class="trait-description">${traitInfo[trait].description}</div>
+                `;
+                resultsContent.appendChild(div);
+            });
+
+            document.getElementById('test-section').classList.add('hidden');
+            document.getElementById('results-section').classList.add('show');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        async function submitResults() {
+            const name = document.getElementById('participant-name').value.trim();
+            const email = document.getElementById('participant-email').value.trim();
+            
+            if (!name || !email) {
+                showError('Please fill in all required fields.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-results-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    name: name,
+                    email: email,
+                    openness: calculatedScores.O,
+                    conscientiousness: calculatedScores.C,
+                    extroversion: calculatedScores.E,
+                    agreeableness: calculatedScores.A,
+                    negativeEmotion: calculatedScores.N
+                };
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // With no-cors, we can't read the response, so we assume success
+                showSuccess();
+                submitBtn.textContent = 'Submitted ✓';
+                
+            } catch (error) {
+                showError('Unable to submit results. Please contact the L&D team directly.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Results to L&D Team';
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById('success-message').classList.add('show');
+            document.getElementById('error-message').classList.remove('show');
+            document.getElementById('participant-name').disabled = true;
+            document.getElementById('participant-email').disabled = true;
+        }
+
+        function showError(message) {
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error-message').classList.add('show');
+            document.getElementById('success-message').classList.remove('show');
+        }
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const scores = calculateScores();
+            displayResults(scores);
+        });
+
+        document.getElementById('submit-results-btn').addEventListener('click', submitResults);
+
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            answers = {};
+            calculatedScores = {};
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('participant-name').value = '';
+            document.getElementById('participant-email').value = '';
+            document.getElementById('participant-name').disabled = false;
+            document.getElementById('participant-email').disabled = false;
+            document.getElementById('submit-results-btn').disabled = false;
+            document.getElementById('submit-results-btn').textContent = 'Submit Results to L&D Team';
+            document.getElementById('success-message').classList.remove('show');
+            document.getElementById('error-message').classList.remove('show');
+            updateProgress();
+            document.getElementById('test-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('show');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+
+        renderQuestions();
+    </script>
+</body>
+</html>
